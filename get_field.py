@@ -145,8 +145,10 @@ def get_fieldAPI(cookie, reserve_year, reserve_month, reserve_day, timeID):
             elif (response.text == "ok"):
                 print("預約成功，目前時間為", time.localtime())
                 return 0
-            else:
+            elif (response.text.find('wait')!=-1):
                 return 2
+            else:
+                return -1
         else:
             print(f"Failed to call API. Status Code: {response.status_code}")
             return -1

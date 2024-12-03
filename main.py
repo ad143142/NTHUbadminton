@@ -15,11 +15,14 @@ def mp_getfieldAPI(cookie, reserve_year, reserve_month, reserve_day, t):
     while True:
         cnt = 1
         ret = get_fieldAPI(cookie, reserve_year, reserve_month, reserve_day, t)
-        if ret == 0 or ret == 2:
+        if ret == 0:
             break
         elif ret == 1:
             time.sleep(3 * PROCESS_NUM)
             print("第", t, "時間段 第", cnt, "次嘗試時間未到")
+            cnt += 1
+        elif ret == 2:
+            print("第", t, "時間段 第", cnt, "次嘗試回傳wait")
             cnt += 1
         else:
             print("API 呼叫失敗")
@@ -58,12 +61,12 @@ if __name__ == '__main__':
     '''
     reserve_year = 2024
     reserve_month = 12
-    reserve_day = 7
-    times = ['13', '14', '8', '9']
+    reserve_day = 8
+    times = ['13', '14']
     results = []
 
-    start_reserve_hour = 10
-    start_reserve_min = 55
+    start_reserve_hour = 23
+    start_reserve_min = 59
     start_reserve_sec = 0
 
     PROCESS_NUM = 2
