@@ -35,6 +35,9 @@ class Get_field():
         image_array = np.array(image)
         return image_array
 
+    def get_cookie(self):
+        return self.cookie
+
     def login(self):
         # 安裝及啟動Chrome瀏覽器
         self.driver = webdriver.Chrome()
@@ -102,45 +105,49 @@ class Get_field():
         print("No available")
         return False
 
-    def get_fieldAPI(self, reserve_year, reserve_month, reserve_day, timeID):
-        date_time = datetime.datetime(reserve_year, reserve_month, reserve_day,
-                                      0, 0)
-        timestamp = str(int(time.mktime(date_time.timetuple())))
 
-        # API URL
-        url = 'https://nthualb.url.tw/reservation/api/reserve_field'
-        cookie_str = 'PHPSESSID=' + self.cookie
+def get_fieldAPI(cookie, reserve_year, reserve_month, reserve_day, timeID):
+    print("get_fieldAPI: start")
+    date_time = datetime.datetime(reserve_year, reserve_month, reserve_day, 0,
+                                  0)
+    timestamp = str(int(time.mktime(date_time.timetuple())))
 
-        for fieldID in range(0, 8):
-            # API 請求資料
-            data = {
-                'time': str(timeID),  # 替換為您需要的 timeID
-                'field': str(fieldID),  # 替換為您需要的 fieldID
-                'date': timestamp  # 替換為您需要的日期
-            }
+    # API URL
+    url = 'https://nthualb.url.tw/reservation/api/reserve_field'
+    cookie_str = 'PHPSESSID=' + cookie
 
-            # 進行 API 請求
-            response = requests.post(
-                url,
-                headers={
-                    'Content-Type': 'application/json',  # 確保告知伺服器傳送的是 JSON 格式
-                    'Cookie': cookie_str  # 替換為您的 PHPSESSID
-                },
-                data=json.dumps(data)  # 將 Python 字典轉為 JSON
-            )
+    order = [3, 4, 2, 5, 1, 6, 0, 7]
+    for fieldID in order:
+        # API 請求資料
+        data = {
+            'time': str(timeID),  # 替換為您需要的 timeID
+            'field': str(fieldID),  # 替換為您需要的 fieldID
+            'date': timestamp  # 替換為您需要的日期
+        }
 
-            # 處理回應
-            if response.status_code == 200:
-                print(f"Response: {response.text}")
-                if (response.text == "預約失敗，日期錯誤"):
-                    return 1
-                elif (response.text == "reserved"):
-                    continue
-                elif (response.text == "ok"):
-                    return 0
-                else:
-                    return -1
+        # 進行 API 請求
+        response = requests.post(
+            url,
+            headers={
+                'Content-Type': 'application/json',  # 確保告知伺服器傳送的是 JSON 格式
+                'Cookie': cookie_str  # 替換為您的 PHPSESSID
+            },
+            data=json.dumps(data)  # 將 Python 字典轉為 JSON
+        )
+
+        # 處理回應
+        if response.status_code == 200:
+            print(f"Response: {response.text}")
+            if (response.text == "預約失敗，日期錯誤"):
+                return 1
+            elif (response.text == "reserved"):
+                continue
+            elif (response.text == "ok"):
+                print("預約成功，目前時間為", time.localtime())
+                return 0
             else:
-                print(f"Failed to call API. Status Code: {response.status_code}")
                 return -1
-        return 2
+        else:
+            print(f"Failed to call API. Status Code: {response.status_code}")
+            return -1
+    return 2

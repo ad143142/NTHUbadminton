@@ -1,11 +1,28 @@
 from get_field import Get_field
+from get_field import get_fieldAPI
 
-from time import sleep, time
+import time
 from multiprocessing import Pool
 import os
+import copy
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
+
+robot = None
+
+
+def mp_getfieldAPI(cookie, reserve_year, reserve_month, reserve_day, t):
+    print("mp_getfieldAPI: start")
+    while True:
+        cnt = 1
+        ret = get_fieldAPI(cookie, reserve_year, reserve_month, reserve_day, t)
+        if ret != 1:  # 時間還沒到
+            break
+        time.sleep(3)
+        print("第", cnt, "次嘗試時間未到")
+        cnt += 1
+    return ret
 
 if __name__ == '__main__':
     #校友體育館登入網址
@@ -39,26 +56,44 @@ if __name__ == '__main__':
         22:00~23:00	15
 
     '''
-    s_time = time()
     reserve_year = 2024
     reserve_month = 12
     reserve_day = 7
-    times = ['13', '14']
+    # times = ['13', '14', '8', '9']
+    times = ['1', '2']
     results = []
+
+    start_reserve_hour = 10
+    start_reserve_min = 55
+    start_reserve_sec = 0
+
+    PROCESS_NUM = 2
 
     robot = Get_field(URL, ACCOUNT, PASSWORD, MODEL_PATH)
     robot.login()
+    robot_cookie = robot.get_cookie()
     cnt = 1
-    for t in times:
-        while True:
-            ret = robot.get_fieldAPI(reserve_year, reserve_month, reserve_day,
-                                     t)
-            if ret != 1:  # 時間還沒到
-                break
-            sleep(3)
-            print("第", cnt, "次嘗試時間未到")
-            cnt += 1
-        results.append(ret)
+
+    start_time = start_reserve_hour * 3600 + start_reserve_min * 60 + start_reserve_sec
+    # 如果現實時間還沒到開始時間，就一直等待到時間到，只檢查時和分
+
+    now = time.mktime(time.localtime())
+    while (now % 86400 + 8 * 3600) < start_time:
+        now = time.mktime(time.localtime())
+        print("等待到達預約時間 {}:{}:{} 現在時間 {}:{}:{}".format(
+            start_reserve_hour, start_reserve_min, start_reserve_sec,
+            int(((now // 3600 % 24) + 8) % 24), int(now // 60 % 60),
+            int(now % 60)))
+        time.sleep(1)
+    # mp_getfieldAPI(robot, reserve_year, reserve_month, reserve_day, times[0])
+    with Pool(PROCESS_NUM) as pool:
+        for t in times:
+            results.append(
+                pool.apply_async(mp_getfieldAPI,
+                                 (robot_cookie, reserve_year, reserve_month,
+                                  reserve_day, t)))
+        pool.close()
+        pool.join()
 
     for idx, ret in enumerate(results):
-        print(f"第{idx+1}筆結果: {ret}")
+        print(f"第{idx+1}筆結果: {ret.get()}")
