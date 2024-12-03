@@ -9,31 +9,31 @@ import copy
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
-robot = None
-
 
 def mp_getfieldAPI(cookie, reserve_year, reserve_month, reserve_day, t):
     print("mp_getfieldAPI: start")
     while True:
         cnt = 1
         ret = get_fieldAPI(cookie, reserve_year, reserve_month, reserve_day, t)
-        if ret != 1:  # 時間還沒到
+        if ret == 0 or ret == 2:
             break
-        time.sleep(3)
-        print("第", cnt, "次嘗試時間未到")
-        cnt += 1
+        elif ret == 1:
+            time.sleep(3 * PROCESS_NUM)
+            print("第", t, "時間段 第", cnt, "次嘗試時間未到")
+            cnt += 1
+        else:
+            print("API 呼叫失敗")
+            break
+
     return ret
+
 
 if __name__ == '__main__':
     #校友體育館登入網址
-    test_URL = 'C:\\Users\\bywang\\Desktop\\captcha\\god\\test.html'
     URL = 'https://oauth.ccxp.nthu.edu.tw/v1.1/authorize.php?client_id=nthualb&response_type=code'
-    # URL = 'https://oauth.ccxp.nthu.edu.tw/v1.1/authorize.php?response_type=code&client_id=eeclass&redirect_uri=https%3A%2F%2Feeclass.nthu.edu.tw%2Fservice%2Foauth%2F&scope=lmsid+userid&state=&ui_locales=zh-TW'
     ACCOUNT = "YOUR_ACCOUNT"
     PASSWORD = "YOUR_PASSWORD"
     MODEL_PATH = "YOUR_MODEL_PATH"
-
-    # robot.open_url(test_URL)
     '''
     robot.get_availble_field(weekday, time)
         weekday: 第幾個星期幾的欄位 (1~5) 5表示最新的日期，非實際星期幾
@@ -59,8 +59,7 @@ if __name__ == '__main__':
     reserve_year = 2024
     reserve_month = 12
     reserve_day = 7
-    # times = ['13', '14', '8', '9']
-    times = ['1', '2']
+    times = ['13', '14', '8', '9']
     results = []
 
     start_reserve_hour = 10

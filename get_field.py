@@ -146,7 +146,7 @@ def get_fieldAPI(cookie, reserve_year, reserve_month, reserve_day, timeID):
                 print("預約成功，目前時間為", time.localtime())
                 return 0
             else:
-                return -1
+                return 2
         else:
             print(f"Failed to call API. Status Code: {response.status_code}")
             return -1
