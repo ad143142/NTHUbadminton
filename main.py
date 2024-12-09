@@ -7,7 +7,7 @@ import os
 import copy
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
+# from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 
 def mp_getfieldAPI(cookie, reserve_year, reserve_month, reserve_day, t):
@@ -34,9 +34,9 @@ def mp_getfieldAPI(cookie, reserve_year, reserve_month, reserve_day, t):
 if __name__ == '__main__':
     #校友體育館登入網址
     URL = 'https://oauth.ccxp.nthu.edu.tw/v1.1/authorize.php?client_id=nthualb&response_type=code'
-    ACCOUNT = "YOUR_ACCOUNT"
-    PASSWORD = "YOUR_PASSWORD"
-    MODEL_PATH = "YOUR_MODEL_PATH"
+    ACCOUNT = "113501527"
+    PASSWORD = "St137795065"
+    MODEL_PATH = "/home/bywang/NTHUbadminton/god.h5"
     '''
     robot.get_availble_field(weekday, time)
         weekday: 第幾個星期幾的欄位 (1~5) 5表示最新的日期，非實際星期幾
@@ -61,12 +61,12 @@ if __name__ == '__main__':
     '''
     reserve_year = 2024
     reserve_month = 12
-    reserve_day = 8
+    reserve_day = 13
     times = ['13', '14']
     results = []
 
-    start_reserve_hour = 23
-    start_reserve_min = 59
+    start_reserve_hour = 8
+    start_reserve_min = 31
     start_reserve_sec = 0
 
     PROCESS_NUM = 2
