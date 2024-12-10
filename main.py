@@ -7,7 +7,6 @@ import os
 import copy
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 
 def mp_getfieldAPI(cookie, reserve_year, reserve_month, reserve_day, t):

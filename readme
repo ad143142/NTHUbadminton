@@ -1,4 +1,5 @@
+0.安裝環境
+  conda env create --name badminton -f environment.yml
+  conda activate badminton
 1.記得要把god.py/login.py/main.py放在同一個目錄中
 2.把帳號密碼以及model(god.h5)的位置指定好後就可以直接執行main.py
-
-TODO: 搶球場!

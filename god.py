@@ -4,7 +4,6 @@ import time
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 from tensorflow import keras
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 
 class Decaptcha:
