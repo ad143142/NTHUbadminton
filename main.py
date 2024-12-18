@@ -1,5 +1,6 @@
 from get_field import Get_field
 from get_field import get_fieldAPI
+from form import open_form
 
 import time
 from multiprocessing import Pool
@@ -17,10 +18,11 @@ def mp_getfieldAPI(cookie, reserve_year, reserve_month, reserve_day, t):
         if ret == 0:
             break
         elif ret == 1:
-            time.sleep(3 * PROCESS_NUM)
+            time.sleep(3 * 2)
             print("第", t, "時間段 第", cnt, "次嘗試時間未到")
             cnt += 1
         elif ret == 2:
+            time.sleep(3 * 2)
             print("第", t, "時間段 第", cnt, "次嘗試回傳wait")
             cnt += 1
         else:
@@ -29,13 +31,16 @@ def mp_getfieldAPI(cookie, reserve_year, reserve_month, reserve_day, t):
 
     return ret
 
-
+PROCESS_NUM = 2
 if __name__ == '__main__':
+
+    account, password = open_form()
+
     #校友體育館登入網址
     URL = 'https://oauth.ccxp.nthu.edu.tw/v1.1/authorize.php?client_id=nthualb&response_type=code'
-    ACCOUNT = "YOUR_ACCOUNT"
-    PASSWORD = "YOUR_PASSWORD"
-    MODEL_PATH = "YOUR_MODEL_PATH"
+    ACCOUNT = str(account)
+    PASSWORD = str(password)
+    MODEL_PATH = "./god.h5"
     '''
     robot.get_availble_field(weekday, time)
         weekday: 第幾個星期幾的欄位 (1~5) 5表示最新的日期，非實際星期幾
@@ -60,15 +65,13 @@ if __name__ == '__main__':
     '''
     reserve_year = 2024
     reserve_month = 12
-    reserve_day = 8
+    reserve_day = 21
     times = ['13', '14']
     results = []
 
-    start_reserve_hour = 23
-    start_reserve_min = 59
+    start_reserve_hour = 14
+    start_reserve_min = 42
     start_reserve_sec = 0
-
-    PROCESS_NUM = 2
 
     robot = Get_field(URL, ACCOUNT, PASSWORD, MODEL_PATH)
     robot.login()
